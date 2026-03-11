@@ -8,19 +8,32 @@ let timelineChart;
 let allData = [];
 
 async function loadDisasterData() {
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) loadingEl.style.display = 'block';
+
     try {
         const response = await fetch('/api/disasters');
         if (!response.ok) throw new Error('Failed to fetch API');
         allData = await response.json();
+        
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const lastUpdatedEl = document.getElementById('last-updated');
+        if (lastUpdatedEl) {
+            lastUpdatedEl.innerText = `Data updated at: ${timeString}`;
+        }
+        
         updateDashboard();
     } catch (error) {
         console.error(error);
         alert('Data could not be loaded.');
+    } finally {
+        if (loadingEl) loadingEl.style.display = 'none';
     }
 }
 
 function filterData(data, region) {
-    if (region === 'all') return data;
+    if (region === 'World') return data;
 
     const regions = {
         'Europe': { lat: [35, 70], lon: [-10, 40] },
@@ -63,14 +76,15 @@ function updateMap(data) {
             fillOpacity: 0.8
         }).addTo(map);
 
+        const timeStr = new Date(d.timestamp).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
         marker.bindPopup(`
-            <strong>Location:</strong> ${d.location_name}<br>
-            <strong>Magnitude:</strong> ${d.magnitude}<br>
-            <strong>Time:</strong> ${new Date(d.timestamp).toLocaleString()}<br>
-            <strong>Temperature:</strong> ${d.weather ? d.weather.temperature + '°C' : 'N/A'}<br>
-            <strong>Wind speed:</strong> ${d.weather ? d.weather.windspeed + ' km/h' : 'N/A'}<br>
-            <strong>Country:</strong> ${d.country || 'Unknown'}<br>
-            <strong>City:</strong> ${d.city || 'Unknown'}
+            Location: ${d.location_name}<br>
+            Magnitude: ${d.magnitude}<br>
+            Time: ${timeStr}<br>
+            Country: ${d.country || 'Unknown'}<br>
+            City: ${d.city || 'Unknown'}<br>
+            Temperature: ${d.weather ? d.weather.temperature + '°C' : 'N/A'}<br>
+            Wind Speed: ${d.weather ? d.weather.windspeed + ' km/h' : 'N/A'}
         `);
         markers.push(marker);
     });
@@ -115,9 +129,15 @@ function updateChart(data) {
 function updateList(data) {
     const ul = document.getElementById('disaster-list');
     ul.innerHTML = '';
-    data.forEach(d => {
+    
+    // Sort newest first
+    const sortedData = [...data].sort((a, b) => b.timestamp - a.timestamp);
+    const topData = sortedData.slice(0, 30);
+    
+    topData.forEach(d => {
         const li = document.createElement('li');
-        li.innerHTML = \`<strong>\${d.location_name}</strong> - Mag: \${d.magnitude} - \${new Date(d.timestamp).toLocaleString()}\`;
+        const timeStr = new Date(d.timestamp).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+        li.innerText = `${d.location_name} — Magnitude ${d.magnitude} — ${d.country || 'Unknown'} — ${timeStr}`;
         ul.appendChild(li);
     });
 }

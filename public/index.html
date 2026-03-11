@@ -10,12 +10,17 @@
 <body>
     <header>
         <h1>Disaster Awareness Dashboard</h1>
+        <p class="subtitle">Recent Global Natural Events</p>
     </header>
 
+    <div id="loading" class="loading">Loading disaster data...</div>
+
+    <div id="last-updated" class="last-updated"></div>
+
     <div class="filter-section">
-        <label for="region-filter">Region filter:</label>
+        <label for="region-filter">Select Region:</label>
         <select id="region-filter">
-            <option value="all">All Regions</option>
+            <option value="World">World</option>
             <option value="Europe">Europe</option>
             <option value="Asia">Asia</option>
             <option value="North America">North America</option>
