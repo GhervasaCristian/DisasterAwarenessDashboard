@@ -2,20 +2,23 @@ const axios = require('axios');
 
 async function getLocation(latitude, longitude) {
     try {
-        const url = 'https://geocoding-api.open-meteo.com/v1/reverse';
+        // Open-Meteo Geocoding API does not have a /v1/reverse endpoint.
+        // We use the free BigDataCloud Reverse Geocoding API as a powerful alternative.
+        const url = 'https://api.bigdatacloud.net/data/reverse-geocode-client';
         const response = await axios.get(url, {
             params: {
                 latitude,
-                longitude
+                longitude,
+                localityLanguage: 'en'
             },
             timeout: 3000
         });
 
-        const results = response.data.results;
-        if (results && results.length > 0) {
+        const data = response.data;
+        if (data && (data.countryName || data.city || data.locality)) {
             return {
-                country: results[0].country,
-                city: results[0].city || results[0].name
+                country: data.countryName || undefined,
+                city: data.city || data.locality || undefined
             };
         }
         return { country: undefined, city: undefined };
