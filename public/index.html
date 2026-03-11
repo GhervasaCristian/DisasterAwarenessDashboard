@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Awareness Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <h1>Disaster Awareness Dashboard</h1>
+    </header>
+
+    <div class="filter-section">
+        <label for="region-filter">Region filter:</label>
+        <select id="region-filter">
+            <option value="all">All Regions</option>
+            <option value="Europe">Europe</option>
+            <option value="Asia">Asia</option>
+            <option value="North America">North America</option>
+            <option value="South America">South America</option>
+            <option value="Africa">Africa</option>
+            <option value="Oceania">Oceania</option>
+        </select>
+    </div>
+
+    <div class="dashboard-container">
+        <div id="map" class="map-section"></div>
+        <div class="timeline-section">
+            <canvas id="timelineChart"></canvas>
+        </div>
+    </div>
+
+    <div class="event-list">
+        <h2>Recent Disasters</h2>
+        <ul id="disaster-list"></ul>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
